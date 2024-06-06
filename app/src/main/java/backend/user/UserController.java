@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import backend.user.request.UserRegisterRequest;
+import backend.user.request.UserLoginRequest;
 
 @RestController
 @RequestMapping("/api/users")
@@ -21,9 +22,9 @@ public class UserController {
     public ResponseEntity<User> registerUser(@RequestBody UserRegisterRequest request) {
         User registeredUser = new User();
         registeredUser.setUsername(request.getUsername());
-        registeredUser.setPassward(request.getPassword());
+        registeredUser.setPassword(request.getPassword());
         registeredUser.setTripPreference(request.getTripPreference());
-        return ResponseEntity.ok(userService.);
+        return ResponseEntity.ok(userService.registerNewUser(registeredUser));
     }
 
     @GetMapping("/login")
@@ -65,9 +66,9 @@ public class UserController {
         User newUser = new User();
         newUser.setId(userID);
         newUser.setUsername(request.getUsername());
-        newUser.setPassward(request.getPassword());
+        newUser.setPassword(request.getPassword());
         newUser.setTripPreference(request.getTripPreference());
-        User updatedUser = userService.updateUser(user);
+        User updatedUser = userService.updateUser(newUser);
 
         return ResponseEntity.ok(updatedUser);
     }
