@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import backend.user.*;
-import backend.user.request.UserRegisterRequest;
 
 @SpringBootTest
 @AutoConfigureMockMvc

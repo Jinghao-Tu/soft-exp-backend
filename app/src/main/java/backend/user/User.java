@@ -1,14 +1,12 @@
 package backend.user;
 
 import java.util.List;
-
-import backend.trip.Trip;
-
-import java.util.ArrayList;
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import backend.comments.Comment;
+import backend.destination.Destination;
+import backend.post.Post;
 
 @Data
 @NoArgsConstructor
@@ -26,23 +24,14 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String tripPreference;
+    private String hobby;
 
-    @OneToMany(mappedBy = "organizer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Trip> trips = new ArrayList<Trip>();
+    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Destination> destinations;
+    
+    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Post> posts;
 
-    // @ManyToMany(mappedBy = "participants")
-    // private List<Trip> participatedTrips = new ArrayList<Trip>();
-
-    // constructor 方法由 lombok 自动生成
-
-    // getter和setter方法由 lombok 自动生成
-
-    // public void addTripPreference(String tripPrefference) {
-    //     this.tripPreferences.add(tripPrefference);
-    // }
-
-    // public void removeTripPreference(String tripPrefference) {
-    //     this.tripPreferences.remove(tripPrefference);
-    // }
+    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Comment> comments;
 }

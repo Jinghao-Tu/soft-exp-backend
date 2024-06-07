@@ -3,10 +3,8 @@ package backend.user.request;
 import lombok.Data;
 
 @Data
-public class UserRegisterRequest {
+public class RegisterRequest {
     private String username;
     private String password;
-    private String tripPreference;
-
-    // getter和setter方法
+    private String confirmPassword;
 }

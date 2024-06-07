@@ -4,13 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import backend.user.request.UserRegisterRequest;
-import backend.user.request.UserLoginRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import backend.user.request.UpdateRequest;
+import jakarta.annotation.PostConstruct;
+import backend.user.request.RegisterRequest;
+import backend.user.request.LoginRequest;
+
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserController {
-
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
     @Autowired
@@ -18,90 +28,108 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody UserRegisterRequest request) {
-        User registeredUser = new User();
-        registeredUser.setUsername(request.getUsername());
-        registeredUser.setPassword(request.getPassword());
-        registeredUser.setTripPreference(request.getTripPreference());
-        return ResponseEntity.ok(userService.registerNewUser(registeredUser));
+    @PostConstruct
+    public void init() {
+        logger.info("UserController started");
+        // add default users
+        User admin = new User();
+        admin.setUsername("admin");
+        admin.setPassword("123456");
+        admin.setHobby("Reading");
+        userService.saveUser(admin);
+        User user1 = new User();
+        user1.setUsername("usr1");
+        user1.setPassword("123456");
+        user1.setHobby("Playing");
+        userService.saveUser(user1);
+        User user2 = new User();
+        user2.setUsername("usr2");
+        user2.setPassword("123456");
+        user2.setHobby("Looking");
+        userService.saveUser(user2);
     }
 
-    @GetMapping("/login")
-    public ResponseEntity<Long> loginUser(@RequestBody UserLoginRequest request) {
-        // return user id if login is successful
-        if (userService.loginUser(request.getUsername(), request.getPassword())) {
-            User user = userService.getUserByUsername(request.getUsername());
-            return ResponseEntity.ok(user.getId());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("allusers")
+    public ResponseEntity<List<User>> getAllUsers() {
+        logger.info("Getting all users");
+        return ResponseEntity.ok(userService.getAllUsers().stream().toList());
     }
 
-    @GetMapping("/{userID}")
-    public ResponseEntity<User> getUser(@PathVariable Long userID) {
-        User user = userService.getUserByID(userID);
+    @GetMapping("user/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        logger.info("Getting user by username: " + username);
+        User user = userService.getUserByUsername(username);
         if (user == null) {
+            logger.error("User not found: " + username);
             return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(user);
         }
+        logger.info("User found: {}", user);
+        return ResponseEntity.ok(user);
     }
 
-    @PutMapping("/{userID}")
-    public ResponseEntity<User> updateUser(@PathVariable Long userID, @RequestBody UserRegisterRequest request) {
-        User existingUserByID = userService.getUserByID(userID);    
-        // User existingUserByUsername = userService.getUserByUsername(request.getUsername());
-
-        if (existingUserByID == null) {
+    @PostMapping("/users/update")
+    public ResponseEntity<User> updateUser(@RequestBody UpdateRequest updateRequest) {
+        logger.info("Updating user: " + updateRequest.getUsername());
+        String oldUsername = updateRequest.getUsername();
+        User newUser = new User();
+        newUser.setUsername(updateRequest.getNewNickname());
+        newUser.setPassword(updateRequest.getNewPassword());
+        newUser.setHobby(updateRequest.getHobby());
+        User updatedUser = userService.updateUser(oldUsername, newUser);
+        if (updatedUser == null) {
+            logger.error("User not found: " + oldUsername);
             return ResponseEntity.notFound().build();
         }
-
-        // if (existingUserByUsername != null && existingUserByUsername.getId().equals(userID)) {
-        //     User newUser = new User();
-        //
-        //     return ResponseEntity.ok();
-        // }
-
-        User newUser = new User();
-        newUser.setId(userID);
-        newUser.setUsername(request.getUsername());
-        newUser.setPassword(request.getPassword());
-        newUser.setTripPreference(request.getTripPreference());
-        User updatedUser = userService.updateUser(newUser);
-
+        logger.info("User updated: {}", updatedUser);
         return ResponseEntity.ok(updatedUser);
     }
 
-    // @PatchMapping("/{userID}/addTripPreference")
-    // public ResponseEntity<User> addTripPreference(@PathVariable Long userID, @RequestBody String tripPreference) {
-    //     User user = userService.getUserByID(userID);
-    //     if (user == null) {
-    //         return ResponseEntity.notFound().build();
-    //     }
-    //     user.addTripPreference(tripPreference);
-    //     User updatedUser = userService.updateUser(user);
-    //     return ResponseEntity.ok(updatedUser);
-    // }
-
-    // @PatchMapping("/{userID}/removeTripPreference")
-    // public ResponseEntity<User> removeTripPreference(@PathVariable Long userID, @RequestBody String tripPreference) {
-    //     User user = userService.getUserByID(userID);
-    //     if (user == null) {
-    //         return ResponseEntity.notFound().build();
-    //     }
-    //     user.removeTripPreference(tripPreference);
-    //     User updatedUser = userService.updateUser(user);
-    //     return ResponseEntity.ok(updatedUser);
-    // }
-
-    @DeleteMapping("/{userID}")
-    public ResponseEntity<User> deleteUser(@PathVariable Long userID) {
-        User user = userService.getUserByID(userID);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
+    @PostMapping("/register")
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
+        logger.info("Registering user: " + registerRequest.getUsername());
+        if (!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
+            logger.error("Passwords do not match");
+            return ResponseEntity.badRequest().body("Passwords do not match");
         }
-        userService.deleteUser(userID);
-        return ResponseEntity.ok(user);
+        if (userService.getUserByUsername(registerRequest.getUsername()) != null) {
+            logger.error("Username already exists: " + registerRequest.getUsername());
+            return ResponseEntity.badRequest().body("Username already exists");
+        }
+        User user = new User();
+        user.setUsername(registerRequest.getUsername());
+        user.setPassword(registerRequest.getPassword());
+        user.setHobby("");
+        userService.saveUser(user);
+        logger.info("User registered: {}", user);
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("username", user.getUsername());
+        userInfo.put("avatar", "default-avatar.png");
+        // userInfo.put("hobby", user.getHobby());
+        userInfo.put("hobby", "");
+        logger.info("User info: {}", userInfo);
+        return ResponseEntity.ok(userInfo);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        logger.info("Logging in user: " + loginRequest.getUsername());
+        User user = userService.getUserByUsername(loginRequest.getUsername());
+        if (user == null) {
+            logger.error("User not found: " + loginRequest.getUsername());
+            return ResponseEntity.badRequest().body("Error user or password");
+        }
+        if (!user.getPassword().equals(loginRequest.getPassword())) {
+            logger.error("Incorrect password");
+            return ResponseEntity.badRequest().body("Error user or password");
+        }
+        logger.info("User logged in: {}", user);
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("username", user.getUsername());
+        userInfo.put("avatar", "default-avatar.png");
+        // userInfo.put("hobby", user.getHobby());
+        userInfo.put("hobby", "");
+        logger.info("User info: {}", userInfo);
+        return ResponseEntity.ok(userInfo);
+    }
+
 }
