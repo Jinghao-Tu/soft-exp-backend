@@ -36,17 +36,23 @@ public class UserController {
         admin.setUsername("admin");
         admin.setPassword("123456");
         admin.setHobby("Reading");
-        userService.saveUser(admin);
+        if (userService.getUserByUsername(admin.getUsername()) == null) {
+            userService.saveUser(admin);
+        }
         User user1 = new User();
         user1.setUsername("usr1");
         user1.setPassword("123456");
         user1.setHobby("Playing");
-        userService.saveUser(user1);
+        if (userService.getUserByUsername(user1.getUsername()) == null) {
+            userService.saveUser(user1);
+        }
         User user2 = new User();
         user2.setUsername("usr2");
         user2.setPassword("123456");
         user2.setHobby("Looking");
-        userService.saveUser(user2);
+        if (userService.getUserByUsername(user2.getUsername()) == null) {
+            userService.saveUser(user2);
+        }
     }
 
     @GetMapping("allusers")
