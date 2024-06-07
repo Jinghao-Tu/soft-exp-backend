@@ -30,6 +30,6 @@ public class Post {
     @JoinColumn(name = "image_id")
     private List<PostImage> images;
 
-    @OneToMany(mappedBy = "post_id", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Comment> comments;
 }
