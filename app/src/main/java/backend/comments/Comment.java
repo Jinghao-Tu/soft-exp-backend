@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import backend.user.User;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import backend.post.Post;
 
 @Data
@@ -16,10 +19,12 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;

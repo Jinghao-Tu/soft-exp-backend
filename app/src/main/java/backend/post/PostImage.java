@@ -1,5 +1,7 @@
 package backend.post;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +17,10 @@ public class PostImage {
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String url;
+
+    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
 }

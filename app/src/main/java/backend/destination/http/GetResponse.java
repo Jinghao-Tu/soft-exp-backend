@@ -1,11 +1,11 @@
-package backend.destination.request;
+package backend.destination.http;
 
-import java.util.List;
 import lombok.Data;
+import java.util.List;
 
 @Data
-public class AddRequest {
-    // private Long id;
+public class GetResponse {
+    private Long id;
     private String username;
     private String departure;
     private String destination;

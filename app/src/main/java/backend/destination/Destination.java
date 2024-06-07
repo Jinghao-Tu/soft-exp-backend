@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import backend.user.User;
 
 @Data
@@ -17,6 +19,7 @@ public class Destination {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -30,7 +33,7 @@ public class Destination {
     @Column(nullable = false)
     private String departureDate;
 
-    @ElementCollection
+    @Column(nullable = false)
     private List<String> checkboxValues;
 
     @Column(nullable = false)

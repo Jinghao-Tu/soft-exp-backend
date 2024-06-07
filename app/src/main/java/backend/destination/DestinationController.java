@@ -5,21 +5,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
 import backend.user.UserService;
+import backend.destination.http.AddRequest;
+import backend.destination.http.GetResponse;
 import backend.user.User;
-import backend.destination.request.AddRequest;
 
 @RestController
 @RequestMapping("/api")
 public class DestinationController {
     
     private static final Logger logger = LoggerFactory.getLogger(DestinationController.class);
-    
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     private final DestinationService destinationService;
     private final UserService userService;
+
     
     @Autowired
     public DestinationController(DestinationService destinationService, UserService userService) {
@@ -58,10 +62,28 @@ public class DestinationController {
     }
 
     @GetMapping("/destinations")
-    public ResponseEntity<List<Destination>> getAllDestinations() {
+    public ResponseEntity<List<GetResponse>> getAllDestinations() {
         logger.info("Getting all destinations");
         List<Destination> destinations = destinationService.getAllDestinations();
-        return ResponseEntity.ok(destinations);
+        try {
+            logger.info("All destinations: " + objectMapper.writeValueAsString(destinations));
+        } catch (Exception e) {
+            logger.error("Error: " + e.getMessage());
+        }
+        List<GetResponse> responses = destinations.stream().map(destination -> {
+            GetResponse response = new GetResponse();
+            response.setId(destination.getId());
+            response.setUsername(destination.getUser().getUsername());
+            response.setDeparture(destination.getDeparture());
+            response.setDestination(destination.getDestination());
+            response.setDepartureDate(destination.getDepartureDate());
+            response.setCheckboxValues(destination.getCheckboxValues());
+            response.setPriceRange(destination.getPriceRange());
+            response.setCompanionRequirements(destination.getCompanionRequirements());
+            response.setRemark(destination.getRemark());
+            return response;
+        }).toList();
+        return ResponseEntity.ok(responses);
     }
 
     @GetMapping("/destinations/{username}")
@@ -72,6 +94,11 @@ public class DestinationController {
             return ResponseEntity.notFound().build();
         }
         List<Destination> destinations = destinationService.getDestinationsByUser(user);
+        try {
+            logger.info("Destinations: " + objectMapper.writeValueAsString(destinations));
+        } catch (Exception e) {
+            logger.error("Error: " + e.getMessage());
+        }
         return ResponseEntity.ok(destinations);
     }
 
