@@ -1,0 +1,59 @@
+@startuml destination
+
+' !theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Destination {
+  - priceRange: String
+  - id: Long
+  - checkboxValues: List<String>
+  - user: User
+  - departure: String
+  - companionRequirements: String
+  - departureDate: String
+  - destination: String
+  - remark: String
+   departure: String
+   priceRange: String
+   id: Long
+   companionRequirements: String
+   departureDate: String
+   remark: String
+   checkboxValues: List<String>
+   user: User
+   destination: String
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + Destination(): 
+}
+class DestinationController {
+   allDestinations: ResponseEntity<List<GetResponse>>
+  + updateDestination(Long, AddRequest): ResponseEntity<Destination>
+  + addDestination(AddRequest): ResponseEntity<Destination>
+  + getDestinationsByUser(String): List<Destination>
+  + deleteDestination(Long): ResponseEntity<Void>
+  + getDestinationsByUsername(String): ResponseEntity<List<Destination>>
+  + DestinationController(DestinationService, UserService): 
+}
+interface DestinationRepository << interface >> {
+  + findByUser(User): List<Destination>
+}
+class DestinationService {
+   allDestinations: List<Destination>
+  + getDestinationById(Long): Destination
+  + saveDestination(Destination): Destination
+  + deleteDestination(Destination): void
+  + getDestinationsByUser(User): List<Destination>
+  + DestinationService(DestinationRepository): 
+}
+
+DestinationController  -[#595959,dashed]->  Destination           : "«create»"
+DestinationController  -[#595959,dashed]->  DestinationController 
+DestinationController "1" *-[#595959,plain]-> "destinationService\n1" DestinationService    
+DestinationRepository  -[#595959,dashed]->  Destination           
+DestinationService     -[#595959,dashed]->  Destination           
+DestinationService    "1" *-[#595959,plain]-> "destinationRepository\n1" DestinationRepository 
+@enduml

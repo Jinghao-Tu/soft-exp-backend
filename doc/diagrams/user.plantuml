@@ -1,0 +1,54 @@
+@startuml user
+
+' !theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class User {
+  - password: String
+  - comments: List<Comment>
+  - username: String
+  - hobby: String
+  - destinations: List<Destination>
+  - posts: List<Post>
+  - id: Long
+   destinations: List<Destination>
+   password: String
+   comments: List<Comment>
+   hobby: String
+   id: Long
+   username: String
+   posts: List<Post>
+  + toString(): String
+  + hashCode(): int
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + User(): 
+}
+class UserController {
+   allUsers: ResponseEntity<List<User>>
+  + getUserByUsername(String): ResponseEntity<User>
+  + updateUser(UpdateRequest): ResponseEntity<User>
+  + loginUser(LoginRequest): ResponseEntity<?>
+  + init(): void
+  + registerUser(RegisterRequest): ResponseEntity<?>
+  + UserController(UserService): 
+}
+interface UserRepository << interface >> {
+  + findByUsername(String): User
+}
+class UserService {
+   allUsers: List<User>
+  + saveUser(User): User
+  + getUserByUsername(String): User
+  + updateUser(String, User): User
+  + UserService(UserRepository): 
+}
+
+UserController  -[#595959,dashed]->  User           : "«create»"
+UserController  -[#595959,dashed]->  UserController 
+UserController "1" *-[#595959,plain]-> "userService\n1" UserService    
+UserRepository  -[#595959,dashed]->  User           
+UserService     -[#595959,dashed]->  User           
+UserService    "1" *-[#595959,plain]-> "userRepository\n1" UserRepository 
+@enduml

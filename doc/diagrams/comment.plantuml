@@ -1,0 +1,50 @@
+@startuml comment
+
+' !theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Comment {
+  - avatar: String
+  - post: Post
+  - content: String
+  - id: Long
+  - user: User
+   content: String
+   post: Post
+   id: Long
+   user: User
+   avatar: String
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + equals(Object): boolean
+  + Comment(): 
+}
+class CommentController {
+   allComments: ResponseEntity<List<GetResponse>>
+  + getCommentsByPost(Long): ResponseEntity<List<GetResponse>>
+  + addComment(AddRequest): ResponseEntity<Comment>
+  + updateComment(Long, Comment): ResponseEntity<Comment>
+  + deleteComment(Long): ResponseEntity<Void>
+  + CommentController(CommentService, PostService, UserService): 
+}
+interface CommentRepository << interface >> {
+  + findByPost(Post): List<Comment>
+}
+class CommentService {
+   allComments: List<Comment>
+  + getCommentById(Long): Comment
+  + deleteComment(Comment): void
+  + saveComment(Comment): void
+  + getCommentsByPost(Post): List<Comment>
+  + CommentService(CommentRepository): 
+}
+
+CommentController  -[#595959,dashed]->  Comment           : "«create»"
+CommentController  -[#595959,dashed]->  CommentController 
+CommentController "1" *-[#595959,plain]-> "commentService\n1" CommentService    
+CommentRepository  -[#595959,dashed]->  Comment           
+CommentService     -[#595959,dashed]->  Comment           
+CommentService    "1" *-[#595959,plain]-> "commentRepository\n1" CommentRepository 
+@enduml
