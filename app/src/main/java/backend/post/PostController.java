@@ -59,6 +59,7 @@ public class PostController {
 
             User user = userService.getUserByUsername(username);
             if (user == null) {
+                logger.error("User not found");
                 return ResponseEntity.notFound().build();
             }
             post.setUser(user);
@@ -99,6 +100,13 @@ public class PostController {
             responses.add(response);
         }
         return ResponseEntity.ok(responses);
+    }
+
+    @DeleteMapping("/posts")
+    public ResponseEntity<?> deleteAllPosts() {
+        logger.info("Deleting all posts");
+        postService.deleteAllPosts();
+        return ResponseEntity.ok().build();
     }
 
 }

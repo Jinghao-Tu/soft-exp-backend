@@ -1,0 +1,386 @@
+@startuml backend
+
+' !theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class AddRequest {
+  - destination: String
+  - companionRequirements: String
+  - departure: String
+  - checkboxValues: List<String>
+  - remark: String
+  - username: String
+  - priceRange: String
+  - departureDate: String
+   departure: String
+   priceRange: String
+   companionRequirements: String
+   departureDate: String
+   remark: String
+   checkboxValues: List<String>
+   username: String
+   destination: String
+  + hashCode(): int
+  + toString(): String
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + AddRequest(): 
+}
+class AddRequest {
+  - avatar: String
+  - username: String
+  - content: String
+  - postId: Long
+   content: String
+   username: String
+   postId: Long
+   avatar: String
+  + toString(): String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + AddRequest(): 
+}
+class App {
+  + main(String[]): void
+  + App(): 
+}
+class Comment {
+  - avatar: String
+  - post: Post
+  - content: String
+  - id: Long
+  - user: User
+   content: String
+   post: Post
+   id: Long
+   user: User
+   avatar: String
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + equals(Object): boolean
+  + Comment(): 
+}
+class CommentController {
+   allComments: ResponseEntity<List<GetResponse>>
+  + getCommentsByPost(Long): ResponseEntity<List<GetResponse>>
+  + addComment(AddRequest): ResponseEntity<Comment>
+  + updateComment(Long, Comment): ResponseEntity<Comment>
+  + deleteComment(Long): ResponseEntity<Void>
+  + CommentController(CommentService, PostService, UserService): 
+}
+interface CommentRepository << interface >> {
+  + findByPost(Post): List<Comment>
+}
+class CommentService {
+   allComments: List<Comment>
+  + getCommentById(Long): Comment
+  + deleteComment(Comment): void
+  + saveComment(Comment): void
+  + getCommentsByPost(Post): List<Comment>
+  + CommentService(CommentRepository): 
+}
+class Destination {
+  - priceRange: String
+  - id: Long
+  - checkboxValues: List<String>
+  - user: User
+  - departure: String
+  - companionRequirements: String
+  - departureDate: String
+  - destination: String
+  - remark: String
+   departure: String
+   priceRange: String
+   id: Long
+   companionRequirements: String
+   departureDate: String
+   remark: String
+   checkboxValues: List<String>
+   user: User
+   destination: String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + Destination(): 
+}
+class DestinationController {
+   allDestinations: ResponseEntity<List<GetResponse>>
+  + updateDestination(Long, AddRequest): ResponseEntity<Destination>
+  + addDestination(AddRequest): ResponseEntity<Destination>
+  + getDestinationsByUser(String): List<Destination>
+  + deleteDestination(Long): ResponseEntity<Void>
+  + getDestinationsByUsername(String): ResponseEntity<List<Destination>>
+  + DestinationController(DestinationService, UserService): 
+}
+interface DestinationRepository << interface >> {
+  + findByUser(User): List<Destination>
+}
+class DestinationService {
+   allDestinations: List<Destination>
+  + getDestinationById(Long): Destination
+  + saveDestination(Destination): Destination
+  + deleteDestination(Destination): void
+  + getDestinationsByUser(User): List<Destination>
+  + DestinationService(DestinationRepository): 
+}
+class GetImageResponse {
+  - imageUrl: String
+  - id: Long
+   id: Long
+   imageUrl: String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + GetImageResponse(): 
+}
+class GetResponse {
+  - content: String
+  - avatar: String
+  - postId: Long
+  - id: Long
+  - username: String
+   content: String
+   username: String
+   postId: Long
+   id: Long
+   avatar: String
+  + toString(): String
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + hashCode(): int
+  + GetResponse(): 
+}
+class GetResponse {
+  - id: Long
+  - title: String
+  - username: String
+  - images: List<GetImageResponse>
+  - content: String
+   content: String
+   username: String
+   title: String
+   id: Long
+   images: List<GetImageResponse>
+  # canEqual(Object): boolean
+  + toString(): String
+  + hashCode(): int
+  + equals(Object): boolean
+  + GetResponse(): 
+}
+class GetResponse {
+  - companionRequirements: String
+  - departure: String
+  - username: String
+  - checkboxValues: List<String>
+  - id: Long
+  - departureDate: String
+  - priceRange: String
+  - destination: String
+  - remark: String
+   departure: String
+   priceRange: String
+   id: Long
+   companionRequirements: String
+   departureDate: String
+   remark: String
+   checkboxValues: List<String>
+   username: String
+   destination: String
+  + equals(Object): boolean
+  + toString(): String
+  + hashCode(): int
+  # canEqual(Object): boolean
+  + GetResponse(): 
+}
+class LoginRequest {
+  - password: String
+  - username: String
+   password: String
+   username: String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + LoginRequest(): 
+}
+class Post {
+  - comments: List<Comment>
+  - id: Long
+  - user: User
+  - title: String
+  - content: String
+  - images: List<PostImage>
+   content: String
+   comments: List<Comment>
+   title: String
+   id: Long
+   user: User
+   images: List<PostImage>
+  + toString(): String
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + equals(Object): boolean
+  + Post(): 
+}
+class PostController {
+   allPosts: ResponseEntity<List<GetResponse>>
+  + addPost(String, String, String, List<MultipartFile>): ResponseEntity<Post>
+  + PostController(PostService, UserService): 
+}
+class PostImage {
+  - id: Long
+  - url: String
+  - post: Post
+   post: Post
+   id: Long
+   url: String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + PostImage(): 
+}
+interface PostRepository << interface >>
+class PostService {
+   allPosts: List<Post>
+  + getPostById(Long): Post
+  + savePost(Post): void
+  + PostService(PostRepository): 
+}
+class RegisterRequest {
+  - username: String
+  - password: String
+  - confirmPassword: String
+   password: String
+   confirmPassword: String
+   username: String
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + RegisterRequest(): 
+}
+class UpdateRequest {
+  - hobby: String
+  - username: String
+  - newNickname: String
+  - newPassword: String
+   username: String
+   newPassword: String
+   hobby: String
+   newNickname: String
+  + equals(Object): boolean
+  + toString(): String
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + UpdateRequest(): 
+}
+class User {
+  - password: String
+  - comments: List<Comment>
+  - username: String
+  - hobby: String
+  - destinations: List<Destination>
+  - posts: List<Post>
+  - id: Long
+   destinations: List<Destination>
+   password: String
+   comments: List<Comment>
+   hobby: String
+   id: Long
+   username: String
+   posts: List<Post>
+  # canEqual(Object): boolean
+  + equals(Object): boolean
+  + toString(): String
+  + hashCode(): int
+  + User(): 
+}
+class UserController {
+   allUsers: ResponseEntity<List<User>>
+  + getUserByUsername(String): ResponseEntity<User>
+  + updateUser(UpdateRequest): ResponseEntity<User>
+  + loginUser(LoginRequest): ResponseEntity<?>
+  + init(): void
+  + registerUser(RegisterRequest): ResponseEntity<?>
+  + UserController(UserService): 
+}
+interface UserRepository << interface >> {
+  + findByUsername(String): User
+}
+class UserService {
+   allUsers: List<User>
+  + saveUser(User): User
+  + getUserByUsername(String): User
+  + updateUser(String, User): User
+  + UserService(UserRepository): 
+}
+class WebConfig {
+  + addCorsMappings(CorsRegistry): void
+  + WebConfig(): 
+}
+
+App                    -[#595959,dashed]->  App                   
+Comment               "1" *-[#595959,plain]-> "post\n1" Post                  
+Comment               "1" *-[#595959,plain]-> "user\n1" User                  
+CommentController      -[#595959,dashed]->  AddRequest            
+CommentController      -[#595959,dashed]->  Comment               : "«create»"
+CommentController      -[#595959,dashed]->  CommentController     
+CommentController     "1" *-[#595959,plain]-> "commentService\n1" CommentService        
+CommentController      -[#595959,dashed]->  GetResponse           : "«create»"
+CommentController      -[#595959,dashed]->  Post                  
+CommentController     "1" *-[#595959,plain]-> "postService\n1" PostService           
+CommentController      -[#595959,dashed]->  User                  
+CommentController     "1" *-[#595959,plain]-> "userService\n1" UserService           
+CommentRepository      -[#595959,dashed]->  Comment               
+CommentRepository      -[#595959,dashed]->  Post                  
+CommentService         -[#595959,dashed]->  Comment               
+CommentService        "1" *-[#595959,plain]-> "commentRepository\n1" CommentRepository     
+CommentService         -[#595959,dashed]->  Post                  
+Destination           "1" *-[#595959,plain]-> "user\n1" User                  
+DestinationController  -[#595959,dashed]->  AddRequest            
+DestinationController  -[#595959,dashed]->  Destination           : "«create»"
+DestinationController  -[#595959,dashed]->  DestinationController 
+DestinationController "1" *-[#595959,plain]-> "destinationService\n1" DestinationService    
+DestinationController  -[#595959,dashed]->  GetResponse           : "«create»"
+DestinationController  -[#595959,dashed]->  User                  
+DestinationController "1" *-[#595959,plain]-> "userService\n1" UserService           
+DestinationRepository  -[#595959,dashed]->  Destination           
+DestinationRepository  -[#595959,dashed]->  User                  
+DestinationService     -[#595959,dashed]->  Destination           
+DestinationService    "1" *-[#595959,plain]-> "destinationRepository\n1" DestinationRepository 
+DestinationService     -[#595959,dashed]->  User                  
+GetResponse           "1" *-[#595959,plain]-> "images\n*" GetImageResponse      
+Post                  "1" *-[#595959,plain]-> "comments\n*" Comment               
+Post                  "1" *-[#595959,plain]-> "images\n*" PostImage             
+Post                  "1" *-[#595959,plain]-> "user\n1" User                  
+PostController         -[#595959,dashed]->  GetImageResponse      : "«create»"
+PostController         -[#595959,dashed]->  GetResponse           : "«create»"
+PostController         -[#595959,dashed]->  Post                  : "«create»"
+PostController         -[#595959,dashed]->  PostController        
+PostController         -[#595959,dashed]->  PostImage             : "«create»"
+PostController        "1" *-[#595959,plain]-> "postService\n1" PostService           
+PostController         -[#595959,dashed]->  User                  
+PostController        "1" *-[#595959,plain]-> "userService\n1" UserService           
+PostImage             "1" *-[#595959,plain]-> "post\n1" Post                  
+PostRepository         -[#595959,dashed]->  Post                  
+PostService            -[#595959,dashed]->  Post                  
+PostService           "1" *-[#595959,plain]-> "postRepository\n1" PostRepository        
+User                  "1" *-[#595959,plain]-> "comments\n*" Comment               
+User                  "1" *-[#595959,plain]-> "destinations\n*" Destination           
+User                  "1" *-[#595959,plain]-> "posts\n*" Post                  
+UserController         -[#595959,dashed]->  LoginRequest          
+UserController         -[#595959,dashed]->  RegisterRequest       
+UserController         -[#595959,dashed]->  UpdateRequest         
+UserController         -[#595959,dashed]->  User                  : "«create»"
+UserController         -[#595959,dashed]->  UserController        
+UserController        "1" *-[#595959,plain]-> "userService\n1" UserService           
+UserRepository         -[#595959,dashed]->  User                  
+UserService            -[#595959,dashed]->  User                  
+UserService           "1" *-[#595959,plain]-> "userRepository\n1" UserRepository        
+@enduml

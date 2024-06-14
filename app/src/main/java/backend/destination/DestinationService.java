@@ -36,4 +36,8 @@ public class DestinationService {
         destinationRepository.delete(destination);
     }
 
+    public void deleteDestinationById(Long id) {
+        destinationRepository.deleteById(id);
+    }
+
 }

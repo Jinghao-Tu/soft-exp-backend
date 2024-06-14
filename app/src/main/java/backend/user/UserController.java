@@ -6,23 +6,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import backend.user.http.LoginRequest;
 import backend.user.http.RegisterRequest;
 import backend.user.http.UpdateRequest;
-
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import jakarta.annotation.PostConstruct;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
@@ -51,30 +60,29 @@ public class UserController {
             newUser.setPassword("123456");
             userService.updateUser(admin.getUsername(), newUser);
         }
-        User user1 = new User();
-        user1.setUsername("usr1");
-        user1.setPassword("123456");
-        user1.setHobby("Playing");
-        if (userService.getUserByUsername(user1.getUsername()) == null) {
-            userService.saveUser(user1);
-        } else {
-            // update password
-            User newUser = userService.getUserByUsername(user1.getUsername());
-            newUser.setPassword("123456");
-            userService.updateUser(user1.getUsername(), newUser);
+        for (int i = 1; i <= 30; i++) {
+            User user1 = new User();
+            user1.setUsername("usr" + i);
+            user1.setPassword("123456");
+            String randomHobby = switch ((int) (Math.random() * 5)) {
+                case 0 -> "Reading";
+                case 1 -> "Traveling";
+                case 2 -> "Cooking";
+                case 3 -> "Photography";
+                case 4 -> "Gardening";
+                default -> "Reading";
+            };
+            user1.setHobby(randomHobby);
+            if (userService.getUserByUsername(user1.getUsername()) == null) {
+                userService.saveUser(user1);
+            } else {
+                // update password
+                User newUser = userService.getUserByUsername(user1.getUsername());
+                newUser.setPassword("123456");
+                userService.updateUser(user1.getUsername(), newUser);
+            }
         }
-        User user2 = new User();
-        user2.setUsername("usr2");
-        user2.setPassword("123456");
-        user2.setHobby("Looking");
-        if (userService.getUserByUsername(user2.getUsername()) == null) {
-            userService.saveUser(user2);
-        } else {
-            // update password
-            User newUser = userService.getUserByUsername(user2.getUsername());
-            newUser.setPassword("123456");
-            userService.updateUser(user2.getUsername(), newUser);
-        }
+
     }
 
     @GetMapping("/allusers")
@@ -122,13 +130,14 @@ public class UserController {
 
     // @PostMapping("/users/update")
     // public ResponseEntity<?> check (@RequestBody Object request) {
-    //     // logger.info("Checking request: " + request);
-    //     try {
-    //         logger.info("Checking request: {}", objectMapper.writeValueAsString(request));
-    //     } catch (Exception e) {
-    //         logger.error("Error: " + e.getMessage());
-    //     }
-    //     return ResponseEntity.ok().build();
+    // // logger.info("Checking request: " + request);
+    // try {
+    // logger.info("Checking request: {}",
+    // objectMapper.writeValueAsString(request));
+    // } catch (Exception e) {
+    // logger.error("Error: " + e.getMessage());
+    // }
+    // return ResponseEntity.ok().build();
     // }
 
     @PostMapping("/users/update")
@@ -155,10 +164,6 @@ public class UserController {
             newUser.setHobby(request.getHobby());
         }
         User updatedUser = userService.updateUser(oldUsername, newUser);
-        if (updatedUser == null) {
-            logger.error("Error updating user: " + oldUsername);
-            return ResponseEntity.badRequest().build();
-        }
         try {
             logger.info("User updated: {}", objectMapper.writeValueAsString(updatedUser));
         } catch (Exception e) {
