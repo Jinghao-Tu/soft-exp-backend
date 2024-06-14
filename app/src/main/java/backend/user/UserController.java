@@ -1,5 +1,7 @@
 package backend.user;
 
+import backend.invitation.Invitation;
+import backend.invitation.InvitationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,11 +25,14 @@ public class UserController {
     
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+
+    private final InvitationService invitationService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, InvitationService invitationService) {
         this.userService = userService;
+        this.invitationService = invitationService;
     }
 
     @PostConstruct
@@ -79,21 +84,41 @@ public class UserController {
     }
 
     @GetMapping("/users/{username}")
-    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<Map<String, Object>> getUserByUsername(@PathVariable String username) {
         logger.info("Getting user by username: " + username);
         User user = userService.getUserByUsername(username);
         if (user == null) {
             logger.error("User not found: " + username);
             return ResponseEntity.notFound().build();
         }
+        List<Invitation> invitations = invitationService.getInvitations(username);
+        Map<String, Object> userDetails = new HashMap<>();
+        userDetails.put("user", user);
+        userDetails.put("invitations", invitations);
+
         try {
-            logger.info("User found: {}", objectMapper.writeValueAsString(user));
+            logger.info("User details found: {}", objectMapper.writeValueAsString(userDetails));
         } catch (Exception e) {
             logger.error("Error: " + e.getMessage());
         }
-        // logger.info("User found: {}", user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(userDetails);
     }
+//    @GetMapping("/users/{username}")
+//    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+//        logger.info("Getting user by username: " + username);
+//        User user = userService.getUserByUsername(username);
+//        if (user == null) {
+//            logger.error("User not found: " + username);
+//            return ResponseEntity.notFound().build();
+//        }
+//        try {
+//            logger.info("User found: {}", objectMapper.writeValueAsString(user));
+//        } catch (Exception e) {
+//            logger.error("Error: " + e.getMessage());
+//        }
+//        // logger.info("User found: {}", user);
+//        return ResponseEntity.ok(user);
+//    }
 
     // @PostMapping("/users/update")
     // public ResponseEntity<?> check (@RequestBody Object request) {
@@ -204,6 +229,12 @@ public class UserController {
         userInfo.put("hobby", "");
         logger.info("User info: {}", userInfo);
         return ResponseEntity.ok(userInfo);
+    }
+
+    @GetMapping("/users/{username}/invitations")
+    public ResponseEntity<List<Invitation>> getUserInvitations(@PathVariable String username) {
+        List<Invitation> invitations = invitationService.getInvitations(username);
+        return ResponseEntity.ok(invitations);
     }
 
 }
