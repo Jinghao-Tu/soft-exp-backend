@@ -8,5 +8,4 @@ import java.util.List;
 @Repository
 public interface InvitationRepository extends JpaRepository<Invitation, Long> {
     List<Invitation> findByToUsername(String username);
-    List<Invitation> findByFromUsername(String username);
 }
