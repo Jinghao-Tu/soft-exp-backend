@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -31,13 +32,22 @@ public class InvitationController {
     public ResponseEntity<List<Invitation>> getInvitations(@RequestParam String username) {
         logger.info("Fetching invitations for user: {}", username);
         List<Invitation> invitations = invitationService.getInvitations(username);
+        logger.info("Invitations fetched: {}", invitations);
         return ResponseEntity.ok(invitations);
     }
 
     @PostMapping("/invite/{id}/respond")
-    public ResponseEntity<Invitation> respondToInvitation(@PathVariable Long id, @RequestParam String response) {
+    public ResponseEntity<Invitation> respondToInvitation(@PathVariable Long id, @RequestBody Map<String, String> responseBody) {
+        String response = responseBody.get("response");
         logger.info("Received response to invitation. ID: {}, Response: {}", id, response);
-        Invitation invitation = invitationService.respondToInvitation(id, response);
-        return ResponseEntity.ok(invitation);
+
+        try {
+            Invitation invitation = invitationService.respondToInvitation(id, response);
+            return ResponseEntity.ok(invitation);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
+
+
 }

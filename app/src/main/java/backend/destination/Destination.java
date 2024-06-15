@@ -3,6 +3,7 @@ package backend.destination;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -22,8 +23,9 @@ public class Destination {
     @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @ToString.Exclude
     private User user;
-    
+
     @Column(nullable = false)
     private String departure;
 
@@ -33,6 +35,7 @@ public class Destination {
     @Column(nullable = false)
     private String departureDate;
 
+    @ElementCollection // 使用 @ElementCollection 以存储 checkboxValues 列表
     @Column(nullable = false)
     private List<String> checkboxValues;
 
@@ -44,5 +47,4 @@ public class Destination {
 
     @Column(nullable = false)
     private String remark;
-    
 }

@@ -91,42 +91,42 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers().stream().toList());
     }
 
-    @GetMapping("/users/{username}")
-    public ResponseEntity<Map<String, Object>> getUserByUsername(@PathVariable String username) {
-        logger.info("Getting user by username: " + username);
-        User user = userService.getUserByUsername(username);
-        if (user == null) {
-            logger.error("User not found: " + username);
-            return ResponseEntity.notFound().build();
-        }
-        List<Invitation> invitations = invitationService.getInvitations(username);
-        Map<String, Object> userDetails = new HashMap<>();
-        userDetails.put("user", user);
-        userDetails.put("invitations", invitations);
-
-        try {
-            logger.info("User details found: {}", objectMapper.writeValueAsString(userDetails));
-        } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
-        }
-        return ResponseEntity.ok(userDetails);
-    }
 //    @GetMapping("/users/{username}")
-//    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+//    public ResponseEntity<Map<String, Object>> getUserByUsername(@PathVariable String username) {
 //        logger.info("Getting user by username: " + username);
 //        User user = userService.getUserByUsername(username);
 //        if (user == null) {
 //            logger.error("User not found: " + username);
 //            return ResponseEntity.notFound().build();
 //        }
+//        List<Invitation> invitations = invitationService.getInvitations(username);
+//        Map<String, Object> userDetails = new HashMap<>();
+//        userDetails.put("user", user);
+////        userDetails.put("invitations", invitations);
+//
 //        try {
-//            logger.info("User found: {}", objectMapper.writeValueAsString(user));
+//            logger.info("User details found: {}", objectMapper.writeValueAsString(userDetails));
 //        } catch (Exception e) {
 //            logger.error("Error: " + e.getMessage());
 //        }
-//        // logger.info("User found: {}", user);
-//        return ResponseEntity.ok(user);
+//        return ResponseEntity.ok(userDetails);
 //    }
+    @GetMapping("/users/{username}")
+    public ResponseEntity<User> getUserByUsername(@PathVariable String username) {
+        logger.info("Getting user by username: " + username);
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            logger.error("User not found: " + username);
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            logger.info("User found: {}", objectMapper.writeValueAsString(user));
+        } catch (Exception e) {
+            logger.error("Error: " + e.getMessage());
+        }
+        // logger.info("User found: {}", user);
+        return ResponseEntity.ok(user);
+    }
 
     // @PostMapping("/users/update")
     // public ResponseEntity<?> check (@RequestBody Object request) {

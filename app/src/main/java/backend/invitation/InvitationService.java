@@ -39,11 +39,15 @@ public class InvitationService {
     }
 
     public Invitation respondToInvitation(Long id, String response) {
-        Invitation invitation = invitationRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invitation not found"));
-        if (!response.equals("accepted") && !response.equals("declined")) {
+        Invitation invitation = invitationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid invitation ID"));
+
+        if (!"accept".equals(response) && !"decline".equals(response)) {
             throw new IllegalArgumentException("Invalid response");
         }
+
         invitation.setStatus(response);
         return invitationRepository.save(invitation);
     }
+
 }
