@@ -40,4 +40,15 @@ public class TeamService {
     public Optional<Team> findById(Long id) {
         return teamRepository.findById(id);
     }
+
+    public void removeUserFromTeam(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user != null) {
+            Team team = teamRepository.findByMembersContaining(user);
+            if (team != null) {
+                team.getMembers().remove(user);
+                teamRepository.save(team);
+            }
+        }
+    }
 }
