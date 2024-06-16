@@ -17,4 +17,15 @@ public class TeamController {
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<Team> getTeamByUsername(@PathVariable String username) {
+        Team team = teamService.findByUsername(username);
+        if (team != null) {
+            return ResponseEntity.ok(team);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
