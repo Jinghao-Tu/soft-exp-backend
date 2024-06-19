@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://[2001:da8:b801:cb56:b350:e57b:84d3:4553]:25432/lv_friends
+    #    url: jdbc:postgresql://[2001:da8:b801:cb56:b350:e57b:84d3:4553]:25432/lv_friends
 
-#    url: jdbc:postgresql://192.168.230.133:25432/lv_friends
+    url: jdbc:postgresql://192.168.230.136:25432/lv_friends
     username: lv_admin
     password: 123456
   jpa:
@@ -15,6 +15,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  mvc:
+    static-path-pattern: /uploads/**
+  resources:
+    static-locations: classpath:/static/
 
 #server:
 #  port: 20334

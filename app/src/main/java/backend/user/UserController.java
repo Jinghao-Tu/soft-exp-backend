@@ -3,12 +3,21 @@ package backend.user;
 import backend.invitation.Invitation;
 import backend.invitation.InvitationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.PostConstruct;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +36,7 @@ import backend.user.http.LoginRequest;
 import backend.user.http.RegisterRequest;
 import backend.user.http.UpdateRequest;
 import jakarta.annotation.PostConstruct;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api")
@@ -140,37 +150,120 @@ public class UserController {
     // return ResponseEntity.ok().build();
     // }
 
-    @PostMapping("/users/update")
-    public ResponseEntity<User> updateUser(@RequestBody UpdateRequest request) {
-        // logger.info("Updating user: " + request.getUsername());
-        try {
-            logger.info("Updating user: {}", objectMapper.writeValueAsString(request));
-        } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
-        }
-        String oldUsername = request.getUsername();
-        User newUser = userService.getUserByUsername(oldUsername);
-        if (newUser == null) {
-            logger.error("User not found: " + oldUsername);
+//    @PostMapping("/users/update")
+//    public ResponseEntity<User> updateUser(@RequestBody UpdateRequest request) {
+//        // logger.info("Updating user: " + request.getUsername());
+//        try {
+//            logger.info("Updating user: {}", objectMapper.writeValueAsString(request));
+//        } catch (Exception e) {
+//            logger.error("Error: " + e.getMessage());
+//        }
+//        String oldUsername = request.getUsername();
+//        User newUser = userService.getUserByUsername(oldUsername);
+//        if (newUser == null) {
+//            logger.error("User not found: " + oldUsername);
+//            return ResponseEntity.notFound().build();
+//        }
+//        if (request.getNewNickname() != null && !request.getNewNickname().equals(newUser.getUsername())) {
+//            newUser.setUsername(request.getNewNickname());
+//        }
+//        if (request.getNewPassword() != null && !request.getNewPassword().equals(newUser.getPassword())) {
+//            newUser.setPassword(request.getNewPassword());
+//        }
+//        if (request.getHobby() != null && !request.getHobby().equals(newUser.getHobby())) {
+//            newUser.setHobby(request.getHobby());
+//        }
+//        if (request.getUserAvatar() != null && !request.getUserAvatar().equals(newUser.getAvatar())) {
+//            newUser.setAvatar(request.getUserAvatar());
+//        }
+//        User updatedUser = userService.updateUser(oldUsername, newUser);
+//        try {
+//            logger.info("User updated: {}", objectMapper.writeValueAsString(updatedUser));
+//        } catch (Exception e) {
+//            logger.error("Error: " + e.getMessage());
+//        }
+//        // logger.info("User updated: {}", updatedUser);
+//        return ResponseEntity.ok(updatedUser);
+//    }
+
+    // 更新方法以处理multipart/form-data请求
+    @PostMapping(value = "/users/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> updateUser(
+            @RequestParam("username") String username,
+            @RequestParam(value = "newNickname", required = false) String newNickname,
+            @RequestParam(value = "newPassword", required = false) String newPassword,
+            @RequestParam(value = "hobby", required = false) String hobby,
+            @RequestParam(value = "avatar", required = false) MultipartFile avatarFile) {
+
+        logger.info("Updating user: " + username);
+        User user = userService.getUserByUsername(username);
+        if (user == null) {
+            logger.error("User not found: " + username);
             return ResponseEntity.notFound().build();
         }
-        if (request.getNewNickname() != null && !request.getNewNickname().equals(newUser.getUsername())) {
-            newUser.setUsername(request.getNewNickname());
+
+        logger.debug("Initial user data: {}", user);
+
+        if (newNickname != null) {
+            logger.debug("Updating username to: " + newNickname);
+            user.setUsername(newNickname);
         }
-        if (request.getNewPassword() != null && !request.getNewPassword().equals(newUser.getPassword())) {
-            newUser.setPassword(request.getNewPassword());
+        if (newPassword != null) {
+            logger.debug("Updating password");
+            user.setPassword(newPassword);
         }
-        if (request.getHobby() != null && !request.getHobby().equals(newUser.getHobby())) {
-            newUser.setHobby(request.getHobby());
+        if (hobby != null) {
+            logger.debug("Updating hobby to: " + hobby);
+            user.setHobby(hobby);
         }
-        User updatedUser = userService.updateUser(oldUsername, newUser);
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            logger.debug("Updating avatar");
+            try {
+                String avatarFileName = saveAvatarFile(avatarFile);
+                UserAvatar userAvatar = user.getAvatar();
+                if (userAvatar == null) {
+                    userAvatar = new UserAvatar();
+                }
+//                userAvatar.setUrl(avatarFileName);
+                userAvatar.setUrl("/uploads/" + avatarFileName);  // 更新为相对路径
+                user.setAvatar(userAvatar);
+                logger.debug("Avatar file saved as: " + avatarFileName);
+            } catch (IOException e) {
+                logger.error("Error saving avatar file", e);
+                return ResponseEntity.status(500).body(null);
+            }
+        }
+
+        User updatedUser = null;
         try {
-            logger.info("User updated: {}", objectMapper.writeValueAsString(updatedUser));
+            updatedUser = userService.updateUser(username, user);
+            logger.info("User updated successfully");
         } catch (Exception e) {
-            logger.error("Error: " + e.getMessage());
+            logger.error("Error updating user", e);
+            return ResponseEntity.status(500).body(null);
         }
-        // logger.info("User updated: {}", updatedUser);
+
+        // Avoid nested object references in the logging to prevent deep recursion
+        try {
+            logger.info("Updated user data: id={}, username={}, password={}, hobby={}, avatarUrl={}",
+                    updatedUser.getId(),
+                    updatedUser.getUsername(),
+                    updatedUser.getPassword(),
+                    updatedUser.getHobby(),
+                    updatedUser.getAvatar() != null ? updatedUser.getAvatar().getUrl() : "null");
+        } catch (Exception e) {
+            logger.error("Error serializing updated user data", e);
+        }
+
         return ResponseEntity.ok(updatedUser);
+    }
+
+
+    private String saveAvatarFile(MultipartFile file) throws IOException {
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path path = Paths.get("app/src/main/resources/static/uploads", fileName);  // 更新为静态资源路径
+        Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        return fileName;
     }
 
     @PostMapping("/register")

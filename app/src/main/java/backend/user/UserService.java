@@ -31,6 +31,7 @@ public class UserService {
         user.setUsername(newUser.getUsername());
         user.setPassword(newUser.getPassword());
         user.setHobby(newUser.getHobby());
+        user.setAvatar(newUser.getAvatar());
         return userRepository.save(user);
     }
     
@@ -42,5 +43,7 @@ public class UserService {
         userRepository.deleteByUsername(username);
     }
 
+    public void deleteAllUsers() {
+    }
 }
 
