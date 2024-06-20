@@ -1,0 +1,24 @@
+@startuml
+
+left to right direction
+
+:用户: as (user)
+
+rectangle 前端系统 as (frontend) {
+    usecase "注册" as (register)
+    usecase "登录" as (login)
+    usecase "查看个人信息" as (personal)
+}
+
+rectangle 后端系统 as (backend) {
+}
+
+(user) --> (register)
+(user) --> (login)
+(user) --> (personal)
+
+(register) --> (backend)
+(login) --> (backend)
+(personal) --> (backend)
+
+@enduml

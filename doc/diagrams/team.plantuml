@@ -1,0 +1,46 @@
+@startuml
+
+'!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Team {
+  - name: String
+  - id: Long
+  - members: Set<User>
+  + getId(): Long
+  + getName(): String
+  + getMembers(): Set<User>
+  + setId(Long): void
+  + setName(String): void
+  + setMembers(Set<User>): void
+  + equals(Object): boolean
+  # canEqual(Object): boolean
+  + hashCode(): int
+  + toString(): String
+  + Team(): 
+}
+class TeamController {
+  - teamService: TeamService
+  + getTeam(Long): ResponseEntity<Team>
+  + TeamController(): 
+}
+interface TeamRepository << interface >> {
+  + findByMembersContaining(User): Team
+}
+class TeamService {
+  - teamRepository: TeamRepository
+  + saveTeam(Team): Team
+  + findByUser(User): Team
+  + findById(Long): Optional<Team>
+  + addMember(Team, User): void
+  + TeamService(): 
+}
+
+TeamController "1" *-[#595959,plain]-> "1" TeamService
+TeamService ..> User
+TeamService ..> Team
+TeamService    "1" *-[#595959,plain]-> "1" TeamRepository
+TeamRepository ..> User
+TeamRepository ..> Team
+@enduml

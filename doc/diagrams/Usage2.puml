@@ -1,0 +1,24 @@
+@startuml
+
+left to right direction
+
+:用户: as (user)
+
+rectangle 前端系统 as (frontend) {
+    usecase "发布旅游意向" as (trip)
+    usecase "查看推荐队友" as (mate)
+    usecase "自动组队" as (auto)
+}
+
+rectangle 后端系统 as (backend) {
+}
+
+(user) --> (trip)
+(user) --> (mate)
+(user) --> (auto)
+
+(trip) --> (backend)
+(mate) --> (backend)
+(auto) --> (backend)
+
+@enduml

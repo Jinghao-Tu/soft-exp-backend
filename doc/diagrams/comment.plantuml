@@ -1,50 +1,80 @@
-@startuml comment
+@startuml
 
-' !theme plain
+'!theme plain
 top to bottom direction
 skinparam linetype ortho
 
 class Comment {
-  - avatar: String
-  - post: Post
-  - content: String
-  - id: Long
   - user: User
-   content: String
-   post: Post
-   id: Long
-   user: User
-   avatar: String
-  # canEqual(Object): boolean
-  + hashCode(): int
+  - post: Post
+  - id: Long
+  - avatar: String
+  - content: String
+  + getPost(): Post
+  + getId(): Long
   + toString(): String
+  + hashCode(): int
+  + getUser(): User
+  + getContent(): String
+  # canEqual(Object): boolean
+  + getAvatar(): String
+  + setId(Long): void
   + equals(Object): boolean
+  + setUser(User): void
+  + setPost(Post): void
+  + setContent(String): void
+  + setAvatar(String): void
   + Comment(): 
 }
 class CommentController {
-   allComments: ResponseEntity<List<GetResponse>>
+  - userService: UserService
+  - commentService: CommentService
+  - postService: PostService
+  - logger: Logger
+  - objectMapper: ObjectMapper
+  + deleteComment(Long): ResponseEntity<Void>
   + getCommentsByPost(Long): ResponseEntity<List<GetResponse>>
   + addComment(AddRequest): ResponseEntity<Comment>
+  + getAllComments(): ResponseEntity<List<GetResponse>>
   + updateComment(Long, Comment): ResponseEntity<Comment>
-  + deleteComment(Long): ResponseEntity<Void>
   + CommentController(CommentService, PostService, UserService): 
 }
 interface CommentRepository << interface >> {
   + findByPost(Post): List<Comment>
 }
 class CommentService {
-   allComments: List<Comment>
-  + getCommentById(Long): Comment
+  - commentRepository: CommentRepository
+  + getAllComments(): List<Comment>
   + deleteComment(Comment): void
   + saveComment(Comment): void
   + getCommentsByPost(Post): List<Comment>
+  + getCommentById(Long): Comment
   + CommentService(CommentRepository): 
 }
 
-CommentController  -[#595959,dashed]->  Comment           : "«create»"
-CommentController  -[#595959,dashed]->  CommentController 
-CommentController "1" *-[#595959,plain]-> "commentService\n1" CommentService    
-CommentRepository  -[#595959,dashed]->  Comment           
-CommentService     -[#595959,dashed]->  Comment           
-CommentService    "1" *-[#595959,plain]-> "commentRepository\n1" CommentRepository 
+class http.GetResponse {
+    - Long id
+    - Long postId
+    - String content
+    - String username
+    - String avatar
+    + getter()
+    + setter()
+}
+class http.AddRequest {
+    - Long postId
+    - String avatar
+    - String username
+    - String content
+    + getter()
+    + setter()
+}
+
+CommentController .> http
+'CommentController  -[#595959,dashed]->  Comment
+CommentController "1" *-[#595959,plain]-> "1" CommentService
+CommentController "1" *-[#595959,plain]-> "1" UserService
+CommentService    "1" *-[#595959,plain]-> "1" CommentRepository
+CommentService ..> Comment
+CommentRepository ..> Comment
 @enduml

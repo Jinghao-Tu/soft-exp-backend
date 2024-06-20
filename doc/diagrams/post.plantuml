@@ -1,61 +1,94 @@
-@startuml post
+@startuml
 
-' !theme plain
+'!theme plain
 top to bottom direction
 skinparam linetype ortho
 
 class Post {
-  - comments: List<Comment>
-  - id: Long
-  - user: User
-  - title: String
   - content: String
+  - comments: List<Comment>
+  - user: User
+  - id: Long
+  - title: String
   - images: List<PostImage>
-   content: String
-   comments: List<Comment>
-   title: String
-   id: Long
-   user: User
-   images: List<PostImage>
+  + getUser(): User
+  + getId(): Long
+  + getTitle(): String
+  + getContent(): String
+  + getImages(): List<PostImage>
   # canEqual(Object): boolean
+  + setContent(String): void
+  + getComments(): List<Comment>
+  + equals(Object): boolean
+  + setId(Long): void
+  + setUser(User): void
   + hashCode(): int
   + toString(): String
-  + equals(Object): boolean
+  + setComments(List<Comment>): void
+  + setImages(List<PostImage>): void
+  + setTitle(String): void
   + Post(): 
 }
 class PostController {
-   allPosts: ResponseEntity<List<GetResponse>>
+  - logger: Logger
+  - userService: UserService
+  - objectMapper: ObjectMapper
+  - postService: PostService
+  + getAllPosts(): ResponseEntity<List<GetResponse>>
+  + deleteAllPosts(): ResponseEntity<?>
   + addPost(String, String, String, List<MultipartFile>): ResponseEntity<Post>
   + PostController(PostService, UserService): 
 }
 class PostImage {
   - id: Long
-  - url: String
   - post: Post
-   post: Post
-   id: Long
-   url: String
-  # canEqual(Object): boolean
+  - url: String
+  + getPost(): Post
+  + getId(): Long
+  + getUrl(): String
+  + setId(Long): void
+  + setUrl(String): void
+  + setPost(Post): void
   + equals(Object): boolean
+  # canEqual(Object): boolean
   + hashCode(): int
   + toString(): String
   + PostImage(): 
 }
 interface PostRepository << interface >>
 class PostService {
-   allPosts: List<Post>
+  - postRepository: PostRepository
+  + getAllPosts(): List<Post>
   + getPostById(Long): Post
+  + deletePost(Long): void
+  + deleteAllPosts(): void
   + savePost(Post): void
   + PostService(PostRepository): 
 }
 
-Post           "1" *-[#595959,plain]-> "images\n*" PostImage      
-PostController  -[#595959,dashed]->  Post           : "«create»"
-PostController  -[#595959,dashed]->  PostController 
-PostController  -[#595959,dashed]->  PostImage      : "«create»"
-PostController "1" *-[#595959,plain]-> "postService\n1" PostService    
-PostImage      "1" *-[#595959,plain]-> "post\n1" Post           
-PostRepository  -[#595959,dashed]->  Post           
-PostService     -[#595959,dashed]->  Post           
-PostService    "1" *-[#595959,plain]-> "postRepository\n1" PostRepository 
+class http.GetImageResponse {
+    - Long id
+    - String imageUrl
+}
+
+class http.GetResponse {
+    - Long id;
+    - String title
+    - String content
+    - String username
+    - List<GetImageResponse> images
+}
+
+Post           "1" *-[#595959,plain]-> "*" PostImage
+PostController .> http
+'PostController  -[#595959,dashed]->  Post
+'PostController  -[#595959,dashed]->  PostImage
+PostController "1" *-[#595959,plain]-> "1" PostService
+PostController "1" *-[#595959,plain]-> "1" UserService
+PostImage      "1" *-[#595959,plain]-> "1" Post
+PostService    "1" *-[#595959,plain]-> "1" PostRepository
+PostService ..> Post
+PostService ..>PostImage
+PostRepository ..> Post
+PostRepository ..>PostImage
 @enduml

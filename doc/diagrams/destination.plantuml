@@ -1,59 +1,97 @@
-@startuml destination
+@startuml
 
-' !theme plain
+'!theme plain
 top to bottom direction
 skinparam linetype ortho
 
 class Destination {
-  - priceRange: String
-  - id: Long
-  - checkboxValues: List<String>
-  - user: User
-  - departure: String
-  - companionRequirements: String
   - departureDate: String
-  - destination: String
+  - companionRequirements: String
+  - user: User
+  - priceRange: String
   - remark: String
-   departure: String
-   priceRange: String
-   id: Long
-   companionRequirements: String
-   departureDate: String
-   remark: String
-   checkboxValues: List<String>
-   user: User
-   destination: String
-  # canEqual(Object): boolean
+  - destination: String
+  - id: Long
+  - departure: String
+  - checkboxValues: List<String>
+  + getId(): Long
+  + setRemark(String): void
+  + setDestination(String): void
+  + setPriceRange(String): void
+  + setCheckboxValues(List<String>): void
+  + getUser(): User
+  + getDeparture(): String
+  + getDestination(): String
+  + setUser(User): void
   + equals(Object): boolean
+  + setDeparture(String): void
+  + getDepartureDate(): String
+  + setId(Long): void
   + hashCode(): int
+  # canEqual(Object): boolean
+  + getCheckboxValues(): List<String>
+  + getPriceRange(): String
+  + getCompanionRequirements(): String
+  + setDepartureDate(String): void
   + toString(): String
+  + getRemark(): String
+  + setCompanionRequirements(String): void
   + Destination(): 
 }
 class DestinationController {
-   allDestinations: ResponseEntity<List<GetResponse>>
-  + updateDestination(Long, AddRequest): ResponseEntity<Destination>
+  - logger: Logger
+  - destinationService: DestinationService
+  - objectMapper: ObjectMapper
+  - userService: UserService
+  + getDestinationsByUsername(String): ResponseEntity<List<Destination>>
+  + getAllDestinations(): ResponseEntity<List<GetResponse>>
   + addDestination(AddRequest): ResponseEntity<Destination>
   + getDestinationsByUser(String): List<Destination>
   + deleteDestination(Long): ResponseEntity<Void>
-  + getDestinationsByUsername(String): ResponseEntity<List<Destination>>
+  + updateDestination(Long, AddRequest): ResponseEntity<Destination>
   + DestinationController(DestinationService, UserService): 
 }
 interface DestinationRepository << interface >> {
   + findByUser(User): List<Destination>
 }
 class DestinationService {
-   allDestinations: List<Destination>
+  - destinationRepository: DestinationRepository
   + getDestinationById(Long): Destination
   + saveDestination(Destination): Destination
+  + deleteDestinationById(Long): void
   + deleteDestination(Destination): void
   + getDestinationsByUser(User): List<Destination>
+  + getAllDestinations(): List<Destination>
   + DestinationService(DestinationRepository): 
 }
+class http.AddRequest {
+    - String username
+    - String departure
+    - String destination
+    - String departureDate
+    - List<String> checkboxValues
+    - String priceRange
+    - String companionRequirements
+    - String remark
+}
 
-DestinationController  -[#595959,dashed]->  Destination           : "«create»"
-DestinationController  -[#595959,dashed]->  DestinationController 
-DestinationController "1" *-[#595959,plain]-> "destinationService\n1" DestinationService    
-DestinationRepository  -[#595959,dashed]->  Destination           
-DestinationService     -[#595959,dashed]->  Destination           
-DestinationService    "1" *-[#595959,plain]-> "destinationRepository\n1" DestinationRepository 
+class http.GetReponse {
+    - Long id
+    - String username
+    - String departure
+    - String destination
+    - String departureDate
+    - List<String> checkboxValues
+    - String priceRange
+    - String companionRequirements
+    - String remark
+}
+
+DestinationController .> http
+'DestinationController  -[#595959,dashed]->  Destination
+DestinationController "1" *-[#595959,plain]-> "1" DestinationService
+DestinationController "1" *-[#595959,plain]-> "1" UserService
+DestinationService    "1" *-[#595959,plain]-> "1" DestinationRepository
+DestinationService ..> Destination
+DestinationRepository ..> Destination
 @enduml

@@ -1,0 +1,59 @@
+@startuml
+
+'!theme plain
+top to bottom direction
+skinparam linetype ortho
+
+class Invitation {
+  - status: String
+  - from: User
+  - id: Long
+  - to: User
+  + getTo(): User
+  + getId(): Long
+  + toString(): String
+  + getFrom(): User
+  + getStatus(): String
+  + setId(Long): void
+  + setFrom(User): void
+  + setTo(User): void
+  + setStatus(String): void
+  + equals(Object): boolean
+  + hashCode(): int
+  # canEqual(Object): boolean
+  + Invitation(): 
+}
+class InvitationController {
+  - logger: Logger
+  - invitationService: InvitationService
+  - userService: UserService
+  - teamService: TeamService
+  + sendInvitation(InvitationRequest): ResponseEntity<Invitation>
+  + respondToInvitation(Long, Map<String, String>): ResponseEntity<Invitation>
+  + getInvitations(String): ResponseEntity<List<Invitation>>
+  + InvitationController(InvitationService, UserService, TeamService):
+}
+interface InvitationRepository << interface >> {
+  + findByToUsername(String): List<Invitation>
+}
+class InvitationService {
+  - invitationRepository: InvitationRepository
+  + respondToInvitation(Long, String): Invitation
+  + getInvitations(String): List<Invitation>
+  + sendInvitation(String, String): Invitation
+  + InvitationService(InvitationRepository):
+}
+
+class http.InvitationRequest {
+    - String from;
+    - String to;
+}
+
+InvitationController .> http
+InvitationController "1" *-[#595959,plain]-> "1" InvitationService
+InvitationController "1" *-[#595959,plain]-> "1" TeamService
+InvitationController "1" *-[#595959,plain]-> "1" UserService
+InvitationService    "1" *-[#595959,plain]-> "1" InvitationRepository
+InvitationService     -[#595959,dashed]->  Invitation
+InvitationRepository ..> Invitation
+@enduml

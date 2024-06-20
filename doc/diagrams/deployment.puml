@@ -1,0 +1,77 @@
+@startuml overview
+left to right direction
+'skinparam linetype ortho
+
+rectangle frontend
+
+rectangle Controller {
+    rectangle UserController
+    rectangle DestinationController
+    rectangle PostController
+    rectangle CommentController
+    rectangle TeamController
+    rectangle InvitationController
+}
+frontend ---> UserController
+frontend ---> DestinationController
+frontend ---> PostController
+frontend ---> CommentController
+frontend ---> TeamController
+frontend ---> InvitationController
+
+rectangle Service {
+    rectangle UserService
+    rectangle DestinationService
+    rectangle PostService
+    rectangle CommentService
+    rectangle TeamService
+    rectangle InvitationService
+}
+UserController          --> UserService
+UserController          --> InvitationService
+DestinationController   --> DestinationService
+DestinationController   --> UserService
+PostController          --> PostService
+PostController          -->UserService
+CommentController       --> CommentService
+CommentController       --> UserService
+CommentController       --> PostService
+TeamController          --> TeamService
+InvitationController    --> InvitationService
+InvitationController    --> UserService
+InvitationController    --> TeamService
+
+rectangle Repository {
+    rectangle UserRepository
+    rectangle DestinationRepository
+    rectangle PostRepository
+    rectangle CommentRepository
+    rectangle TeamRepository
+    rectangle InvitationRepository
+}
+UserService         --> UserRepository
+DestinationService  --> DestinationRepository
+PostService         --> PostRepository
+CommentService      --> CommentRepository
+TeamService         --> TeamRepository
+InvitationService   --> InvitationRepository
+
+database "LvDB" as db
+UserRepository          --> db
+DestinationRepository   --> db
+PostRepository          --> db
+CommentRepository       --> db
+TeamRepository          --> db
+InvitationRepository    --> db
+
+rectangle MapService
+rectangle "Baidu Map API" as baidu
+frontend    ---> MapService
+MapService  --> baidu
+
+rectangle "AI Service" as AI
+rectangle "OLLAMA container" as ollama
+frontend    ---> AI
+AI          ----> ollama
+
+@enduml

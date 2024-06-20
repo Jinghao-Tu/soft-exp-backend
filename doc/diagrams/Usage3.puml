@@ -1,0 +1,25 @@
+@startuml
+
+left to right direction
+
+:用户: as (user)
+
+rectangle 前端系统 as (frontend) {
+    usecase "自动路线规划" as (route)
+    usecase "智能旅游推荐" as (recommend)
+}
+
+rectangle 百度地图 as (baidu) {
+}
+
+rectangle AI大模型 as (AI) {
+}
+
+(user) --> (route)
+(user) --> (recommend)
+
+(route) --> (baidu)
+(recommend) --> (AI)
+
+
+@enduml
