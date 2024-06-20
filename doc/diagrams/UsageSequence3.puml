@@ -1,0 +1,13 @@
+@startuml
+
+actor       User        as Foo1
+participant Web         as Foo2
+participant "百度地图"      as Foo3
+
+Foo1 -> Foo2: 使用"路线规划"功能
+Foo2 -> Foo3: 调用百度地图 API\n向百度服务器发起请求
+Foo3 -> Foo2: 返回响应
+Foo2 -> Foo2: 计算路线\n在网页上展示
+Foo1 -> Foo2: 查看结果
+
+@enduml

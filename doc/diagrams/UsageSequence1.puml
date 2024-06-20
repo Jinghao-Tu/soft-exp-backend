@@ -1,0 +1,25 @@
+@startuml
+
+actor       User        as Foo1
+participant Web         as Foo2
+boundary    Controller  as Foo3
+control     Service     as Foo4
+control     Repository  as Foo5
+database    Database    as Foo6
+collections Collections as Foo7
+'queue       Queue       as Foo8
+
+Foo1 -> Foo2: 使用注册功能
+Foo2 -> Foo3: 调用 API\n向控制层（边界类）发起注册请求
+Foo3 -> Foo4: 接受来自前端的数据\n处理后发送给服务层
+Foo4 -> Foo5: 完成必要的流程后\n向资源层发送插入请求
+Foo5 -> Foo6: 向数据库发送插入请求
+Foo6 -> Foo7: 对相应的库和表进行操作
+Foo7 -> Foo6: 返回插入的实例
+Foo6 -> Foo5: 返回实例
+Foo5 -> Foo4: 返回实例
+Foo4 -> Foo3: 返回实例
+Foo3 -> Foo2: 返回响应
+Foo1 -> Foo2: 查看结果
+
+@enduml

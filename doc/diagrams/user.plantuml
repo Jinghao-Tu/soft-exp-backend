@@ -1,54 +1,88 @@
-@startuml user
+@startuml
 
-' !theme plain
+'!theme plain
 top to bottom direction
 skinparam linetype ortho
 
 class User {
-  - password: String
-  - comments: List<Comment>
-  - username: String
   - hobby: String
-  - destinations: List<Destination>
-  - posts: List<Post>
   - id: Long
-   destinations: List<Destination>
-   password: String
-   comments: List<Comment>
-   hobby: String
-   id: Long
-   username: String
-   posts: List<Post>
+  - username: String
+  - posts: List<Post>
+  - destinations: List<Destination>
+  - comments: List<Comment>
+  - password: String
+  + getUsername(): String
+  + getId(): Long
+  + getPassword(): String
+  + getHobby(): String
   + toString(): String
-  + hashCode(): int
+  + getDestinations(): List<Destination>
   + equals(Object): boolean
+  + setComments(List<Comment>): void
+  + setPassword(String): void
   # canEqual(Object): boolean
+  + setHobby(String): void
+  + getPosts(): List<Post>
+  + getComments(): List<Comment>
+  + setDestinations(List<Destination>): void
+  + setId(Long): void
+  + setUsername(String): void
+  + setPosts(List<Post>): void
+  + hashCode(): int
   + User(): 
 }
 class UserController {
-   allUsers: ResponseEntity<List<User>>
+  - invitationService: InvitationService
+  - logger: Logger
+  - userService: UserService
+  - objectMapper: ObjectMapper
+  + getUserInvitations(String): ResponseEntity<List<Invitation>>
+  + init(): void
+  + loginUser(LoginRequest): ResponseEntity<?>
   + getUserByUsername(String): ResponseEntity<User>
   + updateUser(UpdateRequest): ResponseEntity<User>
-  + loginUser(LoginRequest): ResponseEntity<?>
-  + init(): void
   + registerUser(RegisterRequest): ResponseEntity<?>
-  + UserController(UserService): 
+  + getAllUsers(): ResponseEntity<List<User>>
+  + UserController(UserService, InvitationService): 
 }
 interface UserRepository << interface >> {
   + findByUsername(String): User
+  + deleteByUsername(String): void
 }
 class UserService {
-   allUsers: List<User>
-  + saveUser(User): User
-  + getUserByUsername(String): User
+  - userRepository: UserRepository
+  + getAllUsers(): List<User>
   + updateUser(String, User): User
+  + getUserByUsername(String): User
+  + saveUser(User): User
+  + deleteUser(String): void
   + UserService(UserRepository): 
 }
 
-UserController  -[#595959,dashed]->  User           : "«create»"
-UserController  -[#595959,dashed]->  UserController 
-UserController "1" *-[#595959,plain]-> "userService\n1" UserService    
-UserRepository  -[#595959,dashed]->  User           
-UserService     -[#595959,dashed]->  User           
-UserService    "1" *-[#595959,plain]-> "userRepository\n1" UserRepository 
+class http.LoginRequest {
+    - String username
+    - String password
+}
+
+class http.RegisterRequest {
+    - String username
+    - String password
+    - String confirmPassword
+}
+
+class http.UpdateRequest {
+    - String username
+    - String newNickname
+    - String newPassword
+    - String hobby
+}
+
+'UserController  -[#595959,dashed]->  User
+UserController .> http
+UserController "1" *-[#595959,plain]-> "1" UserService
+UserController "1" *-[#595959,plain]-> "1" InvitationService
+UserService    "1" *-[#595959,plain]-> "1" UserRepository
+UserService ..> User
+UserRepository ..> User
 @enduml
