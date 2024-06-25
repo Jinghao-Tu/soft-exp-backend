@@ -1,9 +1,12 @@
 package backend.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Data
 @NoArgsConstructor
@@ -19,5 +22,6 @@ public class UserAvatar {
 
     @JsonBackReference
     @OneToOne(mappedBy = "avatar", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private User user;
 }

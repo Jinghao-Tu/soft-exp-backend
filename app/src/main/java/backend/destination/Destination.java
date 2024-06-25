@@ -35,7 +35,7 @@ public class Destination {
     @Column(nullable = false)
     private String departureDate;
 
-    @ElementCollection // 使用 @ElementCollection 以存储 checkboxValues 列表
+    @ElementCollection
     @Column(nullable = false)
     private List<String> checkboxValues;
 

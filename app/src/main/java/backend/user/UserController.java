@@ -186,14 +186,14 @@ public class UserController {
 //        return ResponseEntity.ok(updatedUser);
 //    }
 
-    // 更新方法以处理multipart/form-data请求
     @PostMapping(value = "/users/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> updateUser(
             @RequestParam("username") String username,
             @RequestParam(value = "newNickname", required = false) String newNickname,
             @RequestParam(value = "newPassword", required = false) String newPassword,
             @RequestParam(value = "hobby", required = false) String hobby,
-            @RequestParam(value = "avatar", required = false) MultipartFile avatarFile) {
+            @RequestParam(value = "avatar", required = false) MultipartFile avatarFile
+        ) {
 
         logger.info("Updating user: " + username);
         User user = userService.getUserByUsername(username);
@@ -225,7 +225,7 @@ public class UserController {
                     userAvatar = new UserAvatar();
                 }
 //                userAvatar.setUrl(avatarFileName);
-                userAvatar.setUrl("/uploads/" + avatarFileName);  // 更新为相对路径
+                userAvatar.setUrl(avatarFileName);
                 user.setAvatar(userAvatar);
                 logger.debug("Avatar file saved as: " + avatarFileName);
             } catch (IOException e) {
@@ -261,7 +261,10 @@ public class UserController {
 
     private String saveAvatarFile(MultipartFile file) throws IOException {
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-        Path path = Paths.get("app/src/main/resources/static/uploads", fileName);  // 更新为静态资源路径
+        // print work path
+        logger.info("Working Directory = " + System.getProperty("user.dir"));
+
+        Path path = Paths.get("src/main/resources/static/uploads", fileName);
         Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
         return fileName;
     }
@@ -333,6 +336,20 @@ public class UserController {
     public ResponseEntity<List<Invitation>> getUserInvitations(@PathVariable String username) {
         List<Invitation> invitations = invitationService.getInvitations(username);
         return ResponseEntity.ok(invitations);
+    }
+
+    @GetMapping("/users/getAvatar/{avatar}")
+    public ResponseEntity<?> getAvatar(@PathVariable String avatar) {
+        logger.info("Getting avatar: " + avatar);
+        // get the file from the resources folder
+        Path path = Paths.get("src/main/resources/static/uploads/", avatar);
+        try {
+            byte[] data = Files.readAllBytes(path);
+            return ResponseEntity.ok(data);
+        } catch (IOException e) {
+            logger.error("Error getting avatar: " + avatar, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Avatar not found");
+        }
     }
 
 }
