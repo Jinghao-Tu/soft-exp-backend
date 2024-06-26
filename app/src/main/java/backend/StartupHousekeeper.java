@@ -1,5 +1,6 @@
 package backend;
 
+import backend.comments.CommentService;
 import backend.invitation.InvitationRepository;
 import backend.team.TeamRepository;
 import backend.user.UserService;
@@ -19,13 +20,17 @@ public class StartupHousekeeper {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private CommentService commentService;
     @EventListener(ApplicationReadyEvent.class)
     public void clearInvitations() {
         invitationRepository.deleteAll();
         teamRepository.deleteAll();
         userService.deleteAllUsers();
+        commentService.deleteAllComments();
         System.out.println("All invitations have been cleared.");
         System.out.println("All teams have been cleared.");
         System.out.println("All users have been cleared.");
+        System.out.println("All comments have been cleared.");
     }
 }

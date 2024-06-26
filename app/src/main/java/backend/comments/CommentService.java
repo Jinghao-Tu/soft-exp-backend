@@ -17,6 +17,9 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
+    public static void deleteAllComments() {
+    }
+
     public void saveComment(Comment comment) {
         commentRepository.save(comment);
     }
