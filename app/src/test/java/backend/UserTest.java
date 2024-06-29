@@ -14,6 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import backend.team.*;
+import backend.invitation.InvitationRepository;
+import backend.invitation.InvitationService;
 import backend.user.*;
 import backend.user.http.*;
 
@@ -25,10 +28,22 @@ public class UserTest {
     private UserRepository userRepository;
 
     @Autowired
+    private InvitationRepository invitationRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
     private UserService userService = new UserService(userRepository);
 
     @Autowired
-    private UserController userController = new UserController(userService);
+    private TeamService teamService = new TeamService(teamRepository, userRepository);
+    
+    @Autowired
+    private InvitationService invitationService = new InvitationService(invitationRepository, userService, teamService);
+
+    @Autowired
+    private UserController userController= new UserController(userService, invitationService);
 
     @Autowired
     private MockMvc mockMvc;

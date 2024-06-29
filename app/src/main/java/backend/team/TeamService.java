@@ -16,6 +16,12 @@ public class TeamService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    public TeamService(TeamRepository teamRepository, UserRepository userRepository) {
+        this.teamRepository = teamRepository;
+        this.userRepository = userRepository;
+    }
+
     public Team saveTeam(Team team) {
         return teamRepository.save(team);
     }
