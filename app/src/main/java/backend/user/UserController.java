@@ -138,54 +138,6 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    // @PostMapping("/users/update")
-    // public ResponseEntity<?> check (@RequestBody Object request) {
-    // // logger.info("Checking request: " + request);
-    // try {
-    // logger.info("Checking request: {}",
-    // objectMapper.writeValueAsString(request));
-    // } catch (Exception e) {
-    // logger.error("Error: " + e.getMessage());
-    // }
-    // return ResponseEntity.ok().build();
-    // }
-
-//    @PostMapping("/users/update")
-//    public ResponseEntity<User> updateUser(@RequestBody UpdateRequest request) {
-//        // logger.info("Updating user: " + request.getUsername());
-//        try {
-//            logger.info("Updating user: {}", objectMapper.writeValueAsString(request));
-//        } catch (Exception e) {
-//            logger.error("Error: " + e.getMessage());
-//        }
-//        String oldUsername = request.getUsername();
-//        User newUser = userService.getUserByUsername(oldUsername);
-//        if (newUser == null) {
-//            logger.error("User not found: " + oldUsername);
-//            return ResponseEntity.notFound().build();
-//        }
-//        if (request.getNewNickname() != null && !request.getNewNickname().equals(newUser.getUsername())) {
-//            newUser.setUsername(request.getNewNickname());
-//        }
-//        if (request.getNewPassword() != null && !request.getNewPassword().equals(newUser.getPassword())) {
-//            newUser.setPassword(request.getNewPassword());
-//        }
-//        if (request.getHobby() != null && !request.getHobby().equals(newUser.getHobby())) {
-//            newUser.setHobby(request.getHobby());
-//        }
-//        if (request.getUserAvatar() != null && !request.getUserAvatar().equals(newUser.getAvatar())) {
-//            newUser.setAvatar(request.getUserAvatar());
-//        }
-//        User updatedUser = userService.updateUser(oldUsername, newUser);
-//        try {
-//            logger.info("User updated: {}", objectMapper.writeValueAsString(updatedUser));
-//        } catch (Exception e) {
-//            logger.error("Error: " + e.getMessage());
-//        }
-//        // logger.info("User updated: {}", updatedUser);
-//        return ResponseEntity.ok(updatedUser);
-//    }
-
     @PostMapping(value = "/users/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> updateUser(
             @RequestParam("username") String username,

@@ -185,6 +185,10 @@ public class DestinationTest {
         destinationService.deleteDestinationById(destination.getId());
         // check if destination is deleted
         Assertions.assertEquals(0, destinationService.getDestinationsByUser(user).size());
+        // delete user
+        userService.deleteUser(user.getUsername());
+        // check if user is deleted
+        Assertions.assertNull(userService.getUserByUsername(user.getUsername()));
     }
 
 }
